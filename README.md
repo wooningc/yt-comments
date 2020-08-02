@@ -1,3 +1,7 @@
+fernozzle comment getter, but it just gets the usernames of the commenters. Made for Samburger. Enjoy
+
+----
+
 # yt-comments
 YouTube comment getter. Currently very bad!
 
