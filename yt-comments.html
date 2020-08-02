@@ -13,19 +13,22 @@
 </head>
 <body>
 	<span id="account">Not logged in</span> <button id="login" disabled>Login</button><br />
-	<input id="video-id" placeholder="Video ID" value="h0dXrlZ6CKM" /><button id="get-button">Get comments</button>
+	
+	<input id="video-id" placeholder="Video ID" value="h0dXrlZ6CKM" /><br />
+	<input id="api-key" placeholder="YouTube API key" value="" /> (<a href="https://developers.google.com/youtube/registering_an_application">What?</a>)<br />
+	
+	<button id="get-button">Get comments</button>
 	<textarea id="comment-data" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 	<script>
-var key = 'AIzaSyDQVRI-unkWzbjgzYg0u-SkTiuhBxeL044';
-var votes = {};
+var names = new Set();
 
 var remainingRequests = 0;
 
 function checkFinished() {
 	if (remainingRequests > 0) return;
-	console.log('I think I\'m done (%i comments):', Object.keys(votes).length);
-	console.log(votes);
-	document.getElementById('comment-data').textContent = JSON.stringify(votes);
+	console.log('I think I\'m done:', Object.keys(names).length);
+	console.log(names);
+	document.getElementById('comment-data').textContent = JSON.stringify([...names]);
 }
 
 function noteItem(item) {
@@ -52,11 +55,7 @@ function noteItem(item) {
 		item['snippet']['topLevelComment']['snippet'] :
 		item['snippet'];
 
-	var entry = {
-		content: snippet['textDisplay'],
-		userId:  snippet['authorChannelId']['value']
-	};
-	votes[item['id']] = entry;
+	names.add(snippet.authorDisplayName);
 }
 
 function loadComments(id, modStatus, pageToken) {
