@@ -32,8 +32,6 @@ function checkFinished() {
 }
 
 function noteItem(item, key) {
-	const key = document.querySelector("#api-key").value;
-	
 	if(item['snippet']['totalReplyCount'] > 0) {
 		remainingRequests++;
 		var repliesUrl = 'https://www.googleapis.com/youtube/v3/comments?part=snippet&parentId=' + item['id'] + '&textFormat=plainText&maxResults=100&key=' + key;
