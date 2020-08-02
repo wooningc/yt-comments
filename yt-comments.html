@@ -31,7 +31,9 @@ function checkFinished() {
 	document.getElementById('comment-data').textContent = JSON.stringify([...names]);
 }
 
-function noteItem(item) {
+function noteItem(item, key) {
+	const key = document.querySelector("#api-key").value;
+	
 	if(item['snippet']['totalReplyCount'] > 0) {
 		remainingRequests++;
 		var repliesUrl = 'https://www.googleapis.com/youtube/v3/comments?part=snippet&parentId=' + item['id'] + '&textFormat=plainText&maxResults=100&key=' + key;
@@ -42,7 +44,7 @@ function noteItem(item) {
 			var obj = JSON.parse(rxhr.responseText);
 			if (obj['items']) {
 				obj['items'].forEach(function(item) {
-					noteItem(item);
+					noteItem(item, key);
 				});
 			}
 			console.log('sub %i', remainingRequests);
@@ -58,7 +60,7 @@ function noteItem(item) {
 	names.add(snippet.authorDisplayName);
 }
 
-function loadComments(id, modStatus, pageToken) {
+function loadComments(id, key, modStatus, pageToken) {
 	remainingRequests++;
 
 	var xhr = new XMLHttpRequest();
@@ -76,11 +78,11 @@ function loadComments(id, modStatus, pageToken) {
 		} else {
 			obj['items'].forEach(function(item) {
 				//console.log(modStatus);
-				noteItem(item);
+				noteItem(item, key);
 			});
 
 			if(obj['nextPageToken']) {
-				loadComments(id, modStatus, obj['nextPageToken']);
+				loadComments(id, key, modStatus, obj['nextPageToken']);
 			}
 		}
 		console.log('main %i', remainingRequests);
@@ -91,6 +93,8 @@ function loadComments(id, modStatus, pageToken) {
 
 var token = null;
 function doit() {
+	const key = document.querySelector("#api-key").value;
+	
 	var loginButton = document.getElementById('login');
 	loginButton.removeAttribute('disabled');
 	loginButton.addEventListener('click', function() {
@@ -127,10 +131,11 @@ function doit() {
 	});
 	document.getElementById('get-button').addEventListener('click', function() {
 		var id = document.getElementById('video-id').value;
+		const key = document.querySelector("#api-key").value;
 
 		var modStatuses = ['published', 'heldForReview', 'likelySpam'];
 		modStatuses.forEach(function(modStatus) {
-			loadComments(id, modStatus, null);
+			loadComments(id, key, modStatus, null);
 		});
 	});
 }
